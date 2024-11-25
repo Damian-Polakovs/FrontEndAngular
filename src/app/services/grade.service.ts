@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Grade } from '../models/grade';
-import { environment } from '../../environments/environment';
+import { environment } from '../../environments/environment.development';
 
 @Injectable({
     providedIn: 'root'
 })
 export class GradeService {
-    private apiUrl = `${environment.apiUrl}/gradeHistories`;
+    private apiUrl = `${environment.apiUrl}/v1/gradeHistories`;
 
     constructor(private http: HttpClient) {}
 
@@ -21,11 +21,27 @@ export class GradeService {
     }
 
     createGrade(grade: Grade): Observable<any> {
-        return this.http.post(this.apiUrl, grade);
+        const gradeHistoryPayload = {
+            student_id: grade.student_id,
+            class_id: grade.class_id,
+            scores: [{
+                type: grade.type,
+                score: grade.score
+            }]
+        };
+        return this.http.post(this.apiUrl, gradeHistoryPayload);
     }
 
     updateGrade(id: string, grade: Grade): Observable<any> {
-        return this.http.put(`${this.apiUrl}/${id}`, grade);
+        const gradeHistoryPayload = {
+            student_id: grade.student_id,
+            class_id: grade.class_id,
+            scores: [{
+                type: grade.type,
+                score: grade.score
+            }]
+        };
+        return this.http.put(`${this.apiUrl}/${id}`, gradeHistoryPayload);
     }
 
     deleteGrade(id: string): Observable<any> {
