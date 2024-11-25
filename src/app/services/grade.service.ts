@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment.development';
     providedIn: 'root'
 })
 export class GradeService {
-    private apiUrl = `${environment.apiUrl}/v1/gradeHistories`;
+    private apiUrl = 'http://localhost:3000/api/v1/gradeHistories';
 
     constructor(private http: HttpClient) {}
 

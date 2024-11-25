@@ -2,11 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { GradeService } from '../../services/grade.service';
 import { Grade } from '../../models/grade';
+import { MatTableDataSource } from '@angular/material/table';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+
 @Component({
     selector: 'app-grade-list',
     templateUrl: './grade-list.component.html',
@@ -21,7 +23,7 @@ import { CommonModule } from '@angular/common';
     ]
 })
 export class GradeListComponent implements OnInit {
-    grades: Grade[] = [];
+    dataSource = new MatTableDataSource<Grade>([]);
     displayedColumns: string[] = ['student_id', 'class_id', 'type', 'score', 'actions'];
 
     constructor(
@@ -35,7 +37,9 @@ export class GradeListComponent implements OnInit {
 
     loadGrades(): void {
         this.gradeService.getGrades().subscribe({
-            next: (grades) => this.grades = grades,
+            next: (grades) => {
+                this.dataSource.data = grades;
+            },
             error: () => this.snackBar.open('Failed to load grades', 'Close', { duration: 3000 })
         });
     }

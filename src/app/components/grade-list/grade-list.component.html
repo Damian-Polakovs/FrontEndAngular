@@ -1,39 +1,75 @@
 <div class="container">
     <div class="header">
-        <h1>Grades</h1>
-        <button mat-raised-button color="primary" routerLink="/grades/new">
+        <h1 id="grades-list-title">Grades</h1>
+        <button 
+            mat-raised-button 
+            color="primary" 
+            routerLink="/grades/new"
+            aria-label="Add New Grade"
+        >
             Add Grade
         </button>
     </div>
 
-    <mat-table [dataSource]="grades" class="mat-elevation-z8">
+    <mat-table 
+        [dataSource]="dataSource" 
+        class="mat-elevation-z8"
+        aria-labelledby="grades-list-title"
+    >
         <ng-container matColumnDef="student_id">
-            <mat-header-cell *matHeaderCellDef> Student ID </mat-header-cell>
-            <mat-cell *matCellDef="let grade"> {{grade.student_id}} </mat-cell>
+            <mat-header-cell *matHeaderCellDef> 
+                <span id="student-id-header">Student ID</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let grade" aria-labelledby="student-id-header"> 
+                {{grade.student_id}} 
+            </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="class_id">
-            <mat-header-cell *matHeaderCellDef> Class ID </mat-header-cell>
-            <mat-cell *matCellDef="let grade"> {{grade.class_id}} </mat-cell>
+            <mat-header-cell *matHeaderCellDef> 
+                <span id="class-id-header">Class ID</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let grade" aria-labelledby="class-id-header"> 
+                {{grade.class_id}} 
+            </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="type">
-            <mat-header-cell *matHeaderCellDef> Type </mat-header-cell>
-            <mat-cell *matCellDef="let grade"> {{grade.type}} </mat-cell>
+            <mat-header-cell *matHeaderCellDef> 
+                <span id="type-header">Type</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let grade" aria-labelledby="type-header"> 
+                {{grade.type}} 
+            </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="score">
-            <mat-header-cell *matHeaderCellDef> Score </mat-header-cell>
-            <mat-cell *matCellDef="let grade"> {{grade.score}} </mat-cell>
+            <mat-header-cell *matHeaderCellDef> 
+                <span id="score-header">Score</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let grade" aria-labelledby="score-header"> 
+                {{grade.score}} 
+            </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="actions">
-            <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+            <mat-header-cell *matHeaderCellDef> 
+                <span id="actions-header">Actions</span>
+            </mat-header-cell>
             <mat-cell *matCellDef="let grade">
-                <button mat-icon-button [routerLink]="['/grades', grade._id, 'edit']">
+                <button 
+                    mat-icon-button 
+                    [routerLink]="['/grades', grade._id, 'edit']"
+                    aria-label="Edit Grade"
+                >
                     <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button color="warn" (click)="deleteGrade(grade._id!)">
+                <button 
+                    mat-icon-button 
+                    color="warn" 
+                    (click)="deleteGrade(grade._id!)"
+                    aria-label="Delete Grade"
+                >
                     <mat-icon>delete</mat-icon>
                 </button>
             </mat-cell>

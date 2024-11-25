@@ -6,23 +6,41 @@
         <form [formGroup]="gradeForm" (ngSubmit)="onSubmit()" class="form-container">
             <mat-form-field appearance="outline">
                 <mat-label>Student ID</mat-label>
-                <input matInput type="number" formControlName="student_id">
+                <input matInput 
+                       type="number" 
+                       formControlName="student_id" 
+                       id="student_id"
+                       aria-label="Student ID">
                 <mat-error *ngIf="gradeForm.get('student_id')?.errors?.['required']">
                     Student ID is required
+                </mat-error>
+                <mat-error *ngIf="gradeForm.get('student_id')?.errors?.['min']">
+                    Student ID must be a positive number
                 </mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
                 <mat-label>Class ID</mat-label>
-                <input matInput type="number" formControlName="class_id">
+                <input matInput 
+                       type="number" 
+                       formControlName="class_id" 
+                       id="class_id"
+                       aria-label="Class ID">
                 <mat-error *ngIf="gradeForm.get('class_id')?.errors?.['required']">
                     Class ID is required
+                </mat-error>
+                <mat-error *ngIf="gradeForm.get('class_id')?.errors?.['min']">
+                    Class ID must be a positive number
                 </mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
                 <mat-label>Score</mat-label>
-                <input matInput type="number" formControlName="score">
+                <input matInput 
+                       type="number" 
+                       formControlName="score" 
+                       id="score"
+                       aria-label="Score">
                 <mat-error *ngIf="gradeForm.get('score')?.errors?.['required']">
                     Score is required
                 </mat-error>
@@ -33,7 +51,10 @@
 
             <mat-form-field appearance="outline">
                 <mat-label>Type</mat-label>
-                <mat-select formControlName="type">
+                <mat-select 
+                    formControlName="type" 
+                    id="type"
+                    aria-label="Grade Type">
                     <mat-option value="exam">Exam</mat-option>
                     <mat-option value="quiz">Quiz</mat-option>
                     <mat-option value="homework">Homework</mat-option>
@@ -45,7 +66,10 @@
 
             <div class="form-actions">
                 <button mat-button type="button" routerLink="/grades">Cancel</button>
-                <button mat-raised-button color="primary" type="submit" [disabled]="gradeForm.invalid">
+                <button mat-raised-button 
+                        color="primary" 
+                        type="submit" 
+                        [disabled]="gradeForm.invalid">
                     {{ isEditMode ? 'Update' : 'Save' }}
                 </button>
             </div>
