@@ -3,11 +3,27 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GradeService } from '../../services/grade.service';
-
+import { MatCardModule } from '@angular/material/card';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 @Component({
     selector: 'app-grade-form',
     templateUrl: './grade-form.component.html',
-    styleUrls: ['./grade-form.component.css']
+    styleUrls: ['./grade-form.component.css'],
+    standalone: true,
+    imports: [
+        ReactiveFormsModule,
+        MatCardModule,
+        MatInputModule,
+        MatSelectModule,
+        MatButtonModule,
+        RouterLink,
+        CommonModule
+    ]
 })
 export class GradeFormComponent implements OnInit {
     gradeForm: FormGroup;

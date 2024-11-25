@@ -2,11 +2,23 @@ import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { GradeService } from '../../services/grade.service';
 import { Grade } from '../../models/grade';
-
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 @Component({
     selector: 'app-grade-list',
     templateUrl: './grade-list.component.html',
-    styleUrls: ['./grade-list.component.css']
+    styleUrls: ['./grade-list.component.css'],
+    standalone: true,
+    imports: [
+        MatTableModule, 
+        MatButtonModule, 
+        MatIconModule, 
+        RouterLink,
+        CommonModule
+    ]
 })
 export class GradeListComponent implements OnInit {
     grades: Grade[] = [];
