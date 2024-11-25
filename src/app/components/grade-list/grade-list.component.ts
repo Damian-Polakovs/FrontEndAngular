@@ -38,16 +38,23 @@ export class GradeListComponent implements OnInit {
     loadGrades(): void {
         this.gradeService.getGrades().subscribe({
             next: (grades) => {
-                const mappedGrades = grades.map(grade => ({
-                    _id: grade._id,
-                    student_id: grade.student_id,
-                    class_id: grade.class_id,
-                    score: grade.scores[0].score,
-                    type: grade.scores[0].type
-                }));
+                console.log('Received grades:', grades);
+                const mappedGrades = Array.isArray(grades) 
+                    ? grades.map(grade => ({
+                        _id: grade._id,
+                        student_id: grade.student_id,
+                        class_id: grade.class_id,
+                        score: grade.scores[0]?.score ?? 0,
+                        type: grade.scores[0]?.type ?? 'unknown'
+                    }))
+                    : [];
+    
                 this.dataSource.data = mappedGrades;
             },
-            error: () => this.snackBar.open('Failed to load grades', 'Close', { duration: 3000 })
+            error: (error) => {
+                console.error('Failed to load grades', error);
+                this.snackBar.open('Failed to load grades', 'Close', { duration: 3000 });
+            }
         });
     }
 
