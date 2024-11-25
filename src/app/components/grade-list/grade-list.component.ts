@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { GradeService } from '../../services/grade.service';
-import { Grade } from '../../models/grade';
+import { Grade, GradeHistory, PaginatedResponse } from '../../models/grade';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -37,18 +37,18 @@ export class GradeListComponent implements OnInit {
 
     loadGrades(): void {
         this.gradeService.getGrades().subscribe({
-            next: (grades) => {
-                console.log('Received grades:', grades);
-                const mappedGrades = Array.isArray(grades) 
-                    ? grades.map(grade => ({
-                        _id: grade._id,
-                        student_id: grade.student_id,
-                        class_id: grade.class_id,
-                        score: grade.scores[0]?.score ?? 0,
-                        type: grade.scores[0]?.type ?? 'unknown'
-                    }))
-                    : [];
-    
+            next: (response: PaginatedResponse<GradeHistory>) => {
+                console.log('Received paginated response:', response);
+                
+                const mappedGrades: Grade[] = response.data.map(history => ({
+                    _id: history._id,
+                    student_id: history.student_id,
+                    class_id: history.class_id,
+                    score: history.scores[0]?.score || 0,
+                    type: history.scores[0]?.type || 'unknown'
+                }));
+
+                console.log('Mapped grades:', mappedGrades);
                 this.dataSource.data = mappedGrades;
             },
             error: (error) => {

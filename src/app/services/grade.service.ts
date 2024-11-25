@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { GradeHistory, Grade } from '../models/grade';
-import { environment } from '../../environments/environment.development';
+import { GradeHistory, Grade, PaginatedResponse } from '../models/grade';
 
 @Injectable({
     providedIn: 'root'
@@ -12,8 +11,8 @@ export class GradeService {
 
     constructor(private http: HttpClient) {}
 
-    getGrades(): Observable<GradeHistory[]> {
-        return this.http.get<GradeHistory[]>(this.apiUrl);
+    getGrades(): Observable<PaginatedResponse<GradeHistory>> {
+        return this.http.get<PaginatedResponse<GradeHistory>>(this.apiUrl);
     }
 
     getGrade(id: string): Observable<GradeHistory> {
