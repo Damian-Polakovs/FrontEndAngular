@@ -5,10 +5,8 @@ export interface Attendance {
     date: Date;
     status: 'present' | 'absent' | 'late';
     comments?: string;
-    recordedAt: Date;
-    modifiedAt?: Date;
-    modifiedBy?: string;
-    version: number;
+    dateCreated?: Date;
+    lastUpdated?: Date;
 }
 export interface PaginatedResponse<T> {
     data: T[];

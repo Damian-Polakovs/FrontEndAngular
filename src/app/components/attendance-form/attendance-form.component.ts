@@ -76,7 +76,6 @@ export class AttendanceFormComponent implements OnInit {
             const attendance = {
                 ...formValues,
                 date: new Date(formValues.date),
-                recordedAt: new Date()
             };
             
             const operation = this.isEditMode ?

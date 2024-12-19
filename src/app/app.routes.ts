@@ -3,8 +3,8 @@ import { AttendanceListComponent } from './components/attendance-list/attendance
 import { AttendanceFormComponent } from './components/attendance-form/attendance-form.component';
 
 export const routes: Routes = [
-    { path: 'grades', component: AttendanceListComponent },
-    { path: 'grades/new', component: AttendanceFormComponent },
-    { path: 'grades/:id/edit', component: AttendanceFormComponent },
-    { path: '', redirectTo: '/grades', pathMatch: 'full' }
+    { path: 'attendance', component: AttendanceListComponent },
+    { path: 'attendance/new', component: AttendanceFormComponent },
+    { path: 'attendance/:id/edit', component: AttendanceFormComponent },
+    { path: '', redirectTo: '/attendance', pathMatch: 'full' }
 ];

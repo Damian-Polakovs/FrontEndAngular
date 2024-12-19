@@ -2,32 +2,46 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Attendance, PaginatedResponse } from '../models/attendance';
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AttendanceService {
-    private apiUrl = 'http://localhost:3000/api/v1/attendance';
+    // Matches the Express route mount point exactly: '/api/v1/attendance'
+    private apiUrl = `${environment.apiUrl}/attendance`;
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) {
+        // Log the API URL during service initialization for debugging
+        console.log('AttendanceService initialized with URL:', this.apiUrl);
+    }
 
     getAttendances(): Observable<PaginatedResponse<Attendance>> {
-        return this.http.get<PaginatedResponse<Attendance>>(this.apiUrl);
+        const url = this.apiUrl;
+        console.log('Fetching attendances from:', url);
+        return this.http.get<PaginatedResponse<Attendance>>(url);
     }
 
     getAttendance(id: string): Observable<Attendance> {
-        return this.http.get<Attendance>(`${this.apiUrl}/${id}`);
+        const url = `${this.apiUrl}/${id}`;
+        console.log('Fetching attendance by id from:', url);
+        return this.http.get<Attendance>(url);
     }
 
-    createAttendance(attendance: Attendance): Observable<any> {
-        return this.http.post(this.apiUrl, attendance);
+    createAttendance(attendance: Attendance): Observable<Attendance> {
+        console.log('Creating attendance at:', this.apiUrl);
+        return this.http.post<Attendance>(this.apiUrl, attendance);
     }
 
-    updateAttendance(id: string, attendance: Attendance): Observable<any> {
-        return this.http.put(`${this.apiUrl}/${id}`, attendance);
+    updateAttendance(id: string, attendance: Attendance): Observable<Attendance> {
+        const url = `${this.apiUrl}/${id}`;
+        console.log('Updating attendance at:', url);
+        return this.http.put<Attendance>(url, attendance);
     }
 
-    deleteAttendance(id: string): Observable<any> {
-        return this.http.delete(`${this.apiUrl}/${id}`);
+    deleteAttendance(id: string): Observable<void> {
+        const url = `${this.apiUrl}/${id}`;
+        console.log('Deleting attendance at:', url);
+        return this.http.delete<void>(url);
     }
 }
