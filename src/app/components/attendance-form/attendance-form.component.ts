@@ -59,10 +59,11 @@ export class AttendanceFormComponent implements OnInit {
         if (this.attendanceId) {
             this.attendanceService.getAttendance(this.attendanceId).subscribe({
                 next: (attendance) => {
-                    // Format date for input field
-                    const date = new Date(attendance.date);
-                    attendance.date = date.toISOString().split('T')[0];
-                    this.attendanceForm.patchValue(attendance);
+                    const formattedAttendance = {
+                        ...attendance,
+                        date: this.formatDateForInput(attendance.date)
+                    };
+                    this.attendanceForm.patchValue(formattedAttendance);
                 },
                 error: () => this.snackBar.open('Failed to load attendance record', 'Close', { duration: 3000 })
             });
@@ -71,8 +72,10 @@ export class AttendanceFormComponent implements OnInit {
 
     onSubmit(): void {
         if (this.attendanceForm.valid) {
+            const formValues = this.attendanceForm.value;
             const attendance = {
-                ...this.attendanceForm.value,
+                ...formValues,
+                date: new Date(formValues.date),
                 recordedAt: new Date()
             };
             
@@ -88,5 +91,10 @@ export class AttendanceFormComponent implements OnInit {
                 error: () => this.snackBar.open('Failed to save attendance', 'Close', { duration: 3000 })
             });
         }
+    }
+
+    private formatDateForInput(date: Date | string): string {
+        const d = new Date(date);
+        return d.toISOString().split('T')[0];
     }
 }
