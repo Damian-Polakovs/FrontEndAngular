@@ -1,18 +1,14 @@
-export interface Grade {
+export interface Attendance {
     _id?: string;
     student_id: number;
     class_id: number;
-    score: number;
-    type: 'exam' | 'quiz' | 'homework';
-}
-export interface GradeHistory {
-    _id?: string;
-    student_id: number;
-    class_id: number;
-    scores: {
-        type: 'exam' | 'quiz' | 'homework';
-        score: number;
-    }[];
+    date: Date;
+    status: 'present' | 'absent' | 'late';
+    comments?: string;
+    recordedAt: Date;
+    modifiedAt?: Date;
+    modifiedBy?: string;
+    version: number;
 }
 export interface PaginatedResponse<T> {
     data: T[];
