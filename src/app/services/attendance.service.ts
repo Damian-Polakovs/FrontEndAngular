@@ -8,11 +8,9 @@ import { environment } from '../../environments/environment';
     providedIn: 'root'
 })
 export class AttendanceService {
-    // Matches the Express route mount point exactly: '/api/v1/attendance'
     private apiUrl = `${environment.apiUrl}/attendance`;
 
     constructor(private http: HttpClient) {
-        // Log the API URL during service initialization for debugging
         console.log('AttendanceService initialized with URL:', this.apiUrl);
     }
 
