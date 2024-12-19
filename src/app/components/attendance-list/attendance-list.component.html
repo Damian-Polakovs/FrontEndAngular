@@ -1,27 +1,27 @@
 <div class="container">
     <div class="header">
-        <h1 id="grades-list-title">Grades</h1>
+        <h1 id="attendance-list-title">Attendance Records</h1>
         <button 
             mat-raised-button 
             color="primary" 
-            routerLink="/grades/new"
-            aria-label="Add New Grade"
+            routerLink="/attendance/new"
+            aria-label="Add New Attendance Record"
         >
-            Add Grade
+            Add Attendance
         </button>
     </div>
 
     <mat-table 
         [dataSource]="dataSource" 
         class="mat-elevation-z8"
-        aria-labelledby="grades-list-title"
+        aria-labelledby="attendance-list-title"
     >
         <ng-container matColumnDef="student_id">
             <mat-header-cell *matHeaderCellDef> 
                 <span id="student-id-header">Student ID</span>
             </mat-header-cell>
-            <mat-cell *matCellDef="let grade" aria-labelledby="student-id-header"> 
-                {{grade.student_id}} 
+            <mat-cell *matCellDef="let record" aria-labelledby="student-id-header"> 
+                {{record.student_id}} 
             </mat-cell>
         </ng-container>
 
@@ -29,26 +29,26 @@
             <mat-header-cell *matHeaderCellDef> 
                 <span id="class-id-header">Class ID</span>
             </mat-header-cell>
-            <mat-cell *matCellDef="let grade" aria-labelledby="class-id-header"> 
-                {{grade.class_id}} 
+            <mat-cell *matCellDef="let record" aria-labelledby="class-id-header"> 
+                {{record.class_id}} 
             </mat-cell>
         </ng-container>
 
-        <ng-container matColumnDef="type">
+        <ng-container matColumnDef="date">
             <mat-header-cell *matHeaderCellDef> 
-                <span id="type-header">Type</span>
+                <span id="date-header">Date</span>
             </mat-header-cell>
-            <mat-cell *matCellDef="let grade" aria-labelledby="type-header"> 
-                {{grade.type}} 
+            <mat-cell *matCellDef="let record" aria-labelledby="date-header"> 
+                {{record.date | date}} 
             </mat-cell>
         </ng-container>
 
-        <ng-container matColumnDef="score">
+        <ng-container matColumnDef="status">
             <mat-header-cell *matHeaderCellDef> 
-                <span id="score-header">Score</span>
+                <span id="status-header">Status</span>
             </mat-header-cell>
-            <mat-cell *matCellDef="let grade" aria-labelledby="score-header"> 
-                {{grade.score}} 
+            <mat-cell *matCellDef="let record" aria-labelledby="status-header"> 
+                <span [class]="record.status">{{record.status | titlecase}}</span>
             </mat-cell>
         </ng-container>
 
@@ -56,19 +56,19 @@
             <mat-header-cell *matHeaderCellDef> 
                 <span id="actions-header">Actions</span>
             </mat-header-cell>
-            <mat-cell *matCellDef="let grade">
+            <mat-cell *matCellDef="let record">
                 <button 
                     mat-icon-button 
-                    [routerLink]="['/grades', grade._id, 'edit']"
-                    aria-label="Edit Grade"
+                    [routerLink]="['/attendance', record._id, 'edit']"
+                    aria-label="Edit Attendance Record"
                 >
                     <mat-icon>edit</mat-icon>
                 </button>
                 <button 
                     mat-icon-button 
                     color="warn" 
-                    (click)="deleteGrade(grade._id!)"
-                    aria-label="Delete Grade"
+                    (click)="deleteAttendance(record._id!)"
+                    aria-label="Delete Attendance Record"
                 >
                     <mat-icon>delete</mat-icon>
                 </button>

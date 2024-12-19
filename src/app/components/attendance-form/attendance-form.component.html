@@ -1,0 +1,83 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>{{ isEditMode ? 'Edit' : 'Add' }} Attendance</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <form [formGroup]="attendanceForm" (ngSubmit)="onSubmit()" class="form-container">
+            <mat-form-field appearance="outline">
+                <mat-label>Student ID</mat-label>
+                <input matInput 
+                       type="number" 
+                       formControlName="student_id" 
+                       id="student_id"
+                       aria-label="Student ID">
+                <mat-error *ngIf="attendanceForm.get('student_id')?.errors?.['required']">
+                    Student ID is required
+                </mat-error>
+                <mat-error *ngIf="attendanceForm.get('student_id')?.errors?.['min']">
+                    Student ID must be a positive number
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Class ID</mat-label>
+                <input matInput 
+                       type="number" 
+                       formControlName="class_id" 
+                       id="class_id"
+                       aria-label="Class ID">
+                <mat-error *ngIf="attendanceForm.get('class_id')?.errors?.['required']">
+                    Class ID is required
+                </mat-error>
+                <mat-error *ngIf="attendanceForm.get('class_id')?.errors?.['min']">
+                    Class ID must be a positive number
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Date</mat-label>
+                <input matInput 
+                       type="date" 
+                       formControlName="date" 
+                       id="date"
+                       aria-label="Date">
+                <mat-error *ngIf="attendanceForm.get('date')?.errors?.['required']">
+                    Date is required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Status</mat-label>
+                <mat-select 
+                    formControlName="status" 
+                    id="status"
+                    aria-label="Attendance Status">
+                    <mat-option value="present">Present</mat-option>
+                    <mat-option value="absent">Absent</mat-option>
+                    <mat-option value="late">Late</mat-option>
+                </mat-select>
+                <mat-error *ngIf="attendanceForm.get('status')?.errors?.['required']">
+                    Status is required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Comments</mat-label>
+                <textarea matInput 
+                         formControlName="comments" 
+                         id="comments"
+                         aria-label="Comments"></textarea>
+            </mat-form-field>
+
+            <div class="form-actions">
+                <button mat-button type="button" routerLink="/attendance">Cancel</button>
+                <button mat-raised-button 
+                        color="primary" 
+                        type="submit" 
+                        [disabled]="attendanceForm.invalid">
+                    {{ isEditMode ? 'Update' : 'Save' }}
+                </button>
+            </div>
+        </form>
+    </mat-card-content>
+</mat-card>
