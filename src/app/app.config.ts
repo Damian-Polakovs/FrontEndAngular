@@ -1,6 +1,6 @@
 import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { AuthModule } from '@auth0/auth0-angular';
 import { environment } from '../environments/environment';
@@ -10,7 +10,6 @@ import { LoginComponent } from './login/login.component';
 import { AttendanceListComponent } from './components/attendance-list/attendance-list.component';
 import { AttendanceFormComponent } from './components/attendance-form/attendance-form.component';
 import { AttendanceComponent } from './attendance.component';
-import { authInterceptor } from './interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -28,7 +27,7 @@ export const appConfig: ApplicationConfig = {
         ]
       }
     ]),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(),
     provideAnimations(),
     {
       provide: 'Window',
@@ -39,9 +38,7 @@ export const appConfig: ApplicationConfig = {
         domain: environment.auth0.domain,
         clientId: environment.auth0.clientId,
         authorizationParams: {
-          redirect_uri: window.location.origin,
-          audience: `https://${environment.auth0.domain}/api/v2/`,
-          scope: 'openid profile email'
+          redirect_uri: window.location.origin
         }
       })
     )

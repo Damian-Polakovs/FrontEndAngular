@@ -1,4 +1,4 @@
-// src/app/attendance/attendance.component.ts
+//attendance.component.ts
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 

@@ -1,10 +1,51 @@
 .container {
-    padding: 24px;
+    padding: 20px;
 }
 
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
+}
+
+.search-container {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.search-container mat-form-field {
+    flex: 1;
+    min-width: 200px;
+    max-width: 300px;
+}
+
+.mat-table {
+    width: 100%;
+}
+
+.present {
+    color: green;
+}
+
+.absent {
+    color: red;
+}
+
+.late {
+    color: orange;
+}
+
+@media (max-width: 768px) {
+    .search-container {
+        flex-direction: column;
+    }
+    
+    .search-container mat-form-field {
+        width: 100%;
+        max-width: none;
+    }
 }

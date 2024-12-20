@@ -77,7 +77,7 @@ export class AttendanceFormComponent implements OnInit {
                 ...formValues,
                 date: new Date(formValues.date),
             };
-            
+
             const operation = this.isEditMode ?
                 this.attendanceService.updateAttendance(this.attendanceId!, attendance) :
                 this.attendanceService.createAttendance(attendance);

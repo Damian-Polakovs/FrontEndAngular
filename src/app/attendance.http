@@ -1,0 +1,64 @@
+@baseUrl = http://localhost:3000/api/v1
+@authToken = your_auth_token_here
+
+### Get all attendance records
+GET {{baseUrl}}/attendance
+Authorization: Bearer {{authToken}}
+
+### Get a specific attendance record
+GET {{baseUrl}}/attendance/65a123456789abcdef123456
+Authorization: Bearer {{authToken}}
+
+### Create a new attendance record
+POST {{baseUrl}}/attendance
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "student_id": 1001,
+    "class_id": 2001,
+    "date": "2024-01-20T00:00:00.000Z",
+    "status": "present",
+    "comments": "Student arrived on time",
+    "recordedAt": "2024-01-20T10:00:00.000Z"
+}
+
+### Update an existing attendance record
+PUT {{baseUrl}}/attendance/65a123456789abcdef123456
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "student_id": 1001,
+    "class_id": 2001,
+    "date": "2024-01-20T00:00:00.000Z",
+    "status": "late",
+    "comments": "Student arrived 15 minutes late",
+    "recordedAt": "2024-01-20T10:00:00.000Z",
+    "modifiedAt": "2024-01-20T10:15:00.000Z",
+    "version": 2
+}
+
+### Delete an attendance record
+DELETE {{baseUrl}}/attendance/65a123456789abcdef123456
+Authorization: Bearer {{authToken}}
+
+### Get attendance records with pagination
+GET {{baseUrl}}/attendance?page=1&pageSize=10
+Authorization: Bearer {{authToken}}
+
+### Get attendance records for a specific student
+GET {{baseUrl}}/attendance?student_id=1001
+Authorization: Bearer {{authToken}}
+
+### Get attendance records for a specific class
+GET {{baseUrl}}/attendance?class_id=2001
+Authorization: Bearer {{authToken}}
+
+### Get attendance records for a specific date range
+GET {{baseUrl}}/attendance?startDate=2024-01-01&endDate=2024-01-31
+Authorization: Bearer {{authToken}}
+
+### Get attendance records by status
+GET {{baseUrl}}/attendance?status=late
+Authorization: Bearer {{authToken}}

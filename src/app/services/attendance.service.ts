@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { Attendance, PaginatedResponse } from '../models/attendance';
 import { environment } from '../../environments/environment';
 
@@ -10,36 +11,43 @@ import { environment } from '../../environments/environment';
 export class AttendanceService {
     private apiUrl = `${environment.apiUrl}/attendance`;
 
-    constructor(private http: HttpClient) {
-        console.log('AttendanceService initialized with URL:', this.apiUrl);
+    constructor(private http: HttpClient) {}
+
+    private handleError(error: HttpErrorResponse) {
+        console.error('An error occurred:', error);
+        return throwError(() => new Error('Something went wrong; please try again later.'));
     }
 
-    getAttendances(): Observable<PaginatedResponse<Attendance>> {
-        const url = this.apiUrl;
-        console.log('Fetching attendances from:', url);
-        return this.http.get<PaginatedResponse<Attendance>>(url);
+    getAttendances(params?: any): Observable<PaginatedResponse<Attendance>> {
+        console.log('Fetching attendances with params:', params);
+        return this.http.get<PaginatedResponse<Attendance>>(this.apiUrl, { params });
     }
 
     getAttendance(id: string): Observable<Attendance> {
-        const url = `${this.apiUrl}/${id}`;
-        console.log('Fetching attendance by id from:', url);
-        return this.http.get<Attendance>(url);
+        return this.http.get<Attendance>(`${this.apiUrl}/${id}`)
+            .pipe(
+                catchError(this.handleError)
+            );
     }
 
     createAttendance(attendance: Attendance): Observable<Attendance> {
-        console.log('Creating attendance at:', this.apiUrl);
-        return this.http.post<Attendance>(this.apiUrl, attendance);
+        return this.http.post<Attendance>(this.apiUrl, attendance)
+            .pipe(
+                catchError(this.handleError)
+            );
     }
 
     updateAttendance(id: string, attendance: Attendance): Observable<Attendance> {
-        const url = `${this.apiUrl}/${id}`;
-        console.log('Updating attendance at:', url);
-        return this.http.put<Attendance>(url, attendance);
+        return this.http.put<Attendance>(`${this.apiUrl}/${id}`, attendance)
+            .pipe(
+                catchError(this.handleError)
+            );
     }
 
     deleteAttendance(id: string): Observable<void> {
-        const url = `${this.apiUrl}/${id}`;
-        console.log('Deleting attendance at:', url);
-        return this.http.delete<void>(url);
+        return this.http.delete<void>(`${this.apiUrl}/${id}`)
+            .pipe(
+                catchError(this.handleError)
+            );
     }
 }

@@ -1,3 +1,4 @@
+//app.component.ts
 import { Component } from '@angular/core';
 import { AuthService } from './services/auth.services';
 import { Router } from '@angular/router';
@@ -35,3 +36,5 @@ export class AppComponent {
     this.auth.logout();
   }
 }
+
+
