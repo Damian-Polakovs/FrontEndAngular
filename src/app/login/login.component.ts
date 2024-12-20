@@ -32,7 +32,7 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Check if user is already authenticated
+    //Check if user is already authenticated
     this.auth.isAuthenticated().subscribe(
       isAuthenticated => {
         if (isAuthenticated) {

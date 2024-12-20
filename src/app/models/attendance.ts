@@ -1,4 +1,3 @@
-//attendance.ts
 export interface Attendance {
     _id?: string;
     student_id: number;
