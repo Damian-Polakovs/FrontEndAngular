@@ -38,7 +38,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 export class AttendanceListComponent implements OnInit {
   isLoading = false;
     dataSource = new MatTableDataSource<Attendance>([]);
-    displayedColumns: string[] = ['student_id', 'class_id', 'date', 'status', 'actions'];
+    displayedColumns: string[] = ['student_id', 'student_name', 'class_id', 'date', 'status', 'actions'];
     searchForm: FormGroup;
 
     constructor(

@@ -10,3 +10,147 @@
     gap: 16px;
     justify-content: flex-end;
 }
+
+.attendance-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.form-controls {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.form-controls mat-form-field {
+  min-width: 200px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.attendance-table {
+  width: 100%;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.student-link {
+  color: #1a73e8;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.student-link:hover {
+  text-decoration: underline;
+}
+
+.name-cell {
+  color: #1a73e8;
+}
+
+.comment-field {
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+mat-radio-button {
+  margin: 0 8px;
+}
+
+::ng-deep .mat-radio-button.mat-accent .mat-radio-inner-circle {
+  background-color: #1a73e8;
+}
+
+::ng-deep .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
+  border-color: #1a73e8;
+}
+
+td.mat-cell {
+  padding: 16px;
+}
+
+th.mat-header-cell {
+  padding: 16px;
+  font-weight: 500;
+}
+
+/* Mobile-friendly styles */
+@media screen and (max-width: 768px) {
+  .attendance-container {
+    padding: 10px;
+  }
+
+  .form-controls {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-controls mat-form-field {
+    width: 100%;
+  }
+
+  .action-buttons {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+  }
+
+  /* Make table scrollable horizontally with fixed first column */
+  .attendance-table-container {
+    width: 100%;
+    overflow-x: auto;
+    position: relative;
+  }
+
+  .attendance-table {
+    min-width: 600px; /* Ensure minimum width for content */
+  }
+
+  /* Stack the radio buttons vertically on mobile */
+  .status-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Adjust cell padding for mobile */
+  td.mat-cell {
+    padding: 8px !important;
+  }
+
+  /* Make student name and ID more prominent */
+  .name-cell {
+    min-width: 120px;
+    white-space: nowrap;
+  }
+
+  .student-id-cell {
+    min-width: 80px;
+  }
+
+  /* Adjust comment field for mobile */
+  .comment-field {
+    width: 150px;
+  }
+}

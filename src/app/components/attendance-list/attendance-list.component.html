@@ -1,4 +1,3 @@
-
 <div class="container">
     <div class="header">
         <h1 id="attendance-list-title">Attendance Records</h1>
@@ -65,6 +64,17 @@
             </mat-header-cell>
             <mat-cell *matCellDef="let record" aria-labelledby="student-id-header"> 
                 {{record.student_id}} 
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="student_name">
+            <mat-header-cell *matHeaderCellDef> 
+                <span id="student-name-header">Student Name</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let record" aria-labelledby="student-name-header"> 
+                <a [routerLink]="['/student', record.student_id]" class="student-link">
+                    {{record.student_name}}
+                </a>
             </mat-cell>
         </ng-container>
 

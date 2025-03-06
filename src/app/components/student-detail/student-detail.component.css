@@ -1,0 +1,97 @@
+.student-detail-container {
+  padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.student-info {
+  margin-left: 10px;
+}
+
+.student-info h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.student-id {
+  color: #666;
+  margin: 5px 0 0 0;
+}
+
+.stats-container {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  flex: 1;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.stat-card h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: normal;
+}
+
+.percentage {
+  font-size: 32px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.count {
+  font-size: 14px;
+  color: #666;
+}
+
+.present, .status-chip.present {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.late, .status-chip.late {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+.absent, .status-chip.absent {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.history-section {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.history-table {
+  width: 100%;
+}
+
+.status-chip {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  display: inline-block;
+}
+
+th.mat-header-cell {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+td.mat-cell {
+  padding: 16px 0;
+} 

@@ -1,13 +1,19 @@
+export interface StudentAttendanceRecord {
+    student_id: string;
+    student_name: string;
+    status: 'present' | 'late' | 'absent';
+    comments?: string;
+}
+
 export interface Attendance {
     _id?: string;
-    student_id: number;
-    class_id: number;
+    class_id: string;
     date: Date;
-    status: 'present' | 'absent' | 'late';
-    comments?: string;
+    students: StudentAttendanceRecord[];
     dateCreated?: Date;
     lastUpdated?: Date;
 }
+
 export interface PaginatedResponse<T> {
     data: T[];
     metadata: {
@@ -16,4 +22,16 @@ export interface PaginatedResponse<T> {
         total: number;
         totalPages: number;
     };
+}
+
+export interface BulkAttendanceData {
+    class_id: string;
+    date: Date;
+    records: StudentAttendanceRecord[];
+}
+
+export interface BulkAttendanceResponse {
+    success: boolean;
+    message: string;
+    data?: Attendance;
 }

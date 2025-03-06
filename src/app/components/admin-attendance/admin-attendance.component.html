@@ -1,10 +1,11 @@
 <div class="attendance-container">
+  <app-navbar></app-navbar>
+
   <form [formGroup]="attendanceForm">
     <div class="form-controls">
       <mat-form-field appearance="outline">
         <mat-label>Select Class</mat-label>
         <mat-select formControlName="class_id">
-          <mat-option value="">Select Class</mat-option>
           <mat-option *ngFor="let class of classSchedule" [value]="class.id">
             {{class.name}}
           </mat-option>
@@ -22,52 +23,33 @@
         <button mat-button (click)="applyFilter()">
           <mat-icon>filter_list</mat-icon> Filter
         </button>
-        <button mat-button [matMenuTriggerFor]="exportMenu">
-          <mat-icon>download</mat-icon> Export
-        </button>
-        <mat-menu #exportMenu="matMenu">
-          <button mat-menu-item (click)="exportToCSV()">
-            <mat-icon>description</mat-icon>
-            <span>Export as CSV</span>
-          </button>
-        </mat-menu>
       </div>
     </div>
   </form>
 
   <div class="attendance-table-container">
     <table mat-table [dataSource]="filteredStudents" class="attendance-table">
-      <!-- Student ID Column -->
       <ng-container matColumnDef="student_id">
         <th mat-header-cell *matHeaderCellDef>Student ID</th>
-        <td mat-cell *matCellDef="let student" class="student-id-cell">{{student.student_id}}</td>
+        <td mat-cell *matCellDef="let student">{{student.student_id}}</td>
       </ng-container>
 
-      <!-- Name Column -->
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let student" class="name-cell">
-          <a [routerLink]="['/student', student.student_id]" class="student-link">
-            {{student.student_name}}
-          </a>
-        </td>
+        <td mat-cell *matCellDef="let student">{{student.student_name}}</td>
       </ng-container>
 
-      <!-- Status Columns (Present, Late, Absent) -->
       <ng-container matColumnDef="present">
         <th mat-header-cell *matHeaderCellDef>Status</th>
         <td mat-cell *matCellDef="let student">
-          <div class="status-group">
-            <mat-radio-group [(ngModel)]="student.status" [name]="'attendance_' + student.student_id">
-              <mat-radio-button value="present">Present</mat-radio-button>
-              <mat-radio-button value="late">Late</mat-radio-button>
-              <mat-radio-button value="absent">Absent</mat-radio-button>
-            </mat-radio-group>
-          </div>
+          <mat-radio-group [(ngModel)]="student.status" [name]="'attendance_' + student.student_id">
+            <mat-radio-button value="present">Present</mat-radio-button>
+            <mat-radio-button value="late">Late</mat-radio-button>
+            <mat-radio-button value="absent">Absent</mat-radio-button>
+          </mat-radio-group>
         </td>
       </ng-container>
 
-      <!-- Comments Column -->
       <ng-container matColumnDef="comments">
         <th mat-header-cell *matHeaderCellDef>Comments</th>
         <td mat-cell *matCellDef="let student">
@@ -77,13 +59,19 @@
         </td>
       </ng-container>
 
+      <ng-container matColumnDef="overall_attendance">
+        <th mat-header-cell *matHeaderCellDef>Overall Attendance</th>
+        <td mat-cell *matCellDef="let student" [ngClass]="{'low-attendance': student.overall_attendance < '80%'}">
+          {{student.overall_attendance}}
+        </td>
+      </ng-container>
+
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
   </div>
 
   <div class="form-actions">
-    <button mat-button (click)="cancel()">Cancel</button>
     <button mat-raised-button color="primary" (click)="saveAttendance()">Save Attendance</button>
   </div>
 </div>

@@ -1,25 +1,20 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { AuthService as Auth0Service } from '@auth0/auth0-angular';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private userSubject = new BehaviorSubject<any>(null);
-  
-  constructor(private auth0: Auth0Service) {
-    this.checkAuth();
-  }
+  constructor(
+    private auth0: Auth0Service,
+    private router: Router
+  ) {}
 
-  private checkAuth(): void {
-    this.auth0.user$.subscribe(
-      user => this.userSubject.next(user)
-    );
-  }
-
-  login(): void {
-    this.auth0.loginWithRedirect();
+  loginWithRedirect(options?: any): void {
+    this.auth0.loginWithRedirect(options);
   }
 
   logout(): void {
@@ -30,11 +25,21 @@ export class AuthService {
     });
   }
 
+  getToken(): Observable<string | null> {
+    return this.auth0.getAccessTokenSilently();
+  }
+
   isAuthenticated(): Observable<boolean> {
     return this.auth0.isAuthenticated$;
   }
 
   getUser(): Observable<any> {
-    return this.userSubject.asObservable();
+    return this.auth0.user$;
+  }
+
+  isAdmin(): Observable<boolean> {
+    return this.auth0.user$.pipe(
+      map(user => user?.['https://my-app.com/roles']?.includes('admin') ?? false)
+    );
   }
 }

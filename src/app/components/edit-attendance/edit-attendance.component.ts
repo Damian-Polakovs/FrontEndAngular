@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AttendanceService } from '../../services/attendance.service';
@@ -18,12 +18,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { RouterModule } from '@angular/router';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-attendance-form',
-  templateUrl: './attendance-form.component.html',
-  styleUrls: ['./attendance-form.component.css'],
+  selector: 'app-edit-attendance',
+  templateUrl: './edit-attendance.component.html',
+  styleUrls: ['./edit-attendance.component.css'],
   standalone: true,
   imports: [
     CommonModule,
@@ -42,7 +41,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     RouterModule
   ]
 })
-export class AttendanceFormComponent implements OnInit {
+export class EditAttendanceComponent implements OnInit {
   displayedColumns = ['student_id', 'name', 'present', 'comments'];
   
   // Define class schedule
@@ -99,11 +98,6 @@ export class AttendanceFormComponent implements OnInit {
         student.class_id === selectedClass
       );
     }
-  }
-
-  exportToCSV(): void {
-    // Implementation for CSV export
-    console.log('Exporting to CSV...');
   }
 
   saveAttendance(): void {
@@ -185,5 +179,43 @@ export class AttendanceFormComponent implements OnInit {
     if (currentClass) {
       this.attendanceForm.patchValue({ class_id: currentClass.id });
     }
+  }
+
+  exportToCSV(): void {
+    if (this.filteredStudents.length === 0) {
+      this.snackBar.open('No data to export', 'Close', { duration: 3000 });
+      return;
+    }
+
+    const selectedClass = this.classSchedule.find(c => c.id === this.attendanceForm.get('class_id')?.value);
+    const date = this.attendanceForm.get('date')?.value;
+    const formattedDate = date ? new Date(date).toLocaleDateString() : 'No Date';
+    
+    const headers = ['Student ID', 'Name', 'Status', 'Comments'];
+    const csvData = this.filteredStudents.map(student => [
+      student.student_id,
+      student.student_name,
+      student.status || 'Not Marked',
+      student.comments || ''
+    ]);
+
+    // Add class and date information at the top
+    const titleRow = [`Class: ${selectedClass?.name || 'All Classes'}`];
+    const dateRow = [`Date: ${formattedDate}`];
+    const csvContent = [
+      titleRow,
+      dateRow,
+      [],  // Empty row for spacing
+      headers,
+      ...csvData
+    ].map(row => row.join(',')).join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `attendance_${selectedClass?.id || 'all'}_${formattedDate}.csv`;
+    link.click();
+    window.URL.revokeObjectURL(url);
   }
 }

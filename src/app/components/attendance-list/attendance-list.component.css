@@ -39,6 +39,21 @@
     color: orange;
 }
 
+.student-link {
+    color: #1a73e8;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.student-link:hover {
+    text-decoration: underline;
+}
+
+mat-cell a {
+    color: #1a73e8;
+    text-decoration: none;
+}
+
 @media (max-width: 768px) {
     .search-container {
         flex-direction: column;

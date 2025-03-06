@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AttendanceService } from '../../services/attendance.service';
@@ -15,15 +15,13 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { RouterModule } from '@angular/router';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-attendance-form',
-  templateUrl: './attendance-form.component.html',
-  styleUrls: ['./attendance-form.component.css'],
+  selector: 'app-admin-attendance',
+  templateUrl: './admin-attendance.component.html',
+  styleUrls: ['./admin-attendance.component.css'],
   standalone: true,
   imports: [
     CommonModule,
@@ -37,13 +35,12 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     MatRadioModule,
     MatTableModule,
     MatIconModule,
-    MatMenuModule,
     NavbarComponent,
     RouterModule
   ]
 })
-export class AttendanceFormComponent implements OnInit {
-  displayedColumns = ['student_id', 'name', 'present', 'comments'];
+export class AdminAttendanceComponent implements OnInit {
+  displayedColumns = ['student_id', 'name', 'present', 'comments', 'overall_attendance'];
   
   // Define class schedule
   classSchedule = [
@@ -55,14 +52,14 @@ export class AttendanceFormComponent implements OnInit {
 
   // Define students
   students: Student[] = [
-    { student_id: 'S00212345', student_name: 'John Smith', status: 'present', comments: '', class_id: 'OSD-L-SD' },
-    { student_id: 'S00234567', student_name: 'Emma Johnson', status: 'present', comments: '', class_id: 'OSD-L-SD' },
-    { student_id: 'S00245678', student_name: 'Michael Brown', status: 'present', comments: '', class_id: 'OSD-L-C' },
-    { student_id: 'S00256789', student_name: 'Sarah Davis', status: 'present', comments: '', class_id: 'OSD-L-C' },
-    { student_id: 'S00267890', student_name: 'David Wilson', status: 'present', comments: '', class_id: 'OSD-T-SD' },
-    { student_id: 'S00278901', student_name: 'Alice Cooper', status: 'present', comments: '', class_id: 'OSD-T-SD' },
-    { student_id: 'S00289012', student_name: 'Bob Taylor', status: 'present', comments: '', class_id: 'OSD-T-C' },
-    { student_id: 'S00290123', student_name: 'Carol White', status: 'present', comments: '', class_id: 'OSD-T-C' }
+    { student_id: 'S00212345', student_name: 'John Smith', status: 'present', comments: '', class_id: 'OSD-L-SD', overall_attendance: '95%' },
+    { student_id: 'S00234567', student_name: 'Emma Johnson', status: 'present', comments: '', class_id: 'OSD-L-SD', overall_attendance: '88%' },
+    { student_id: 'S00245678', student_name: 'Michael Brown', status: 'present', comments: '', class_id: 'OSD-L-C', overall_attendance: '92%' },
+    { student_id: 'S00256789', student_name: 'Sarah Davis', status: 'present', comments: '', class_id: 'OSD-L-C', overall_attendance: '78%' },
+    { student_id: 'S00267890', student_name: 'David Wilson', status: 'present', comments: '', class_id: 'OSD-T-SD', overall_attendance: '85%' },
+    { student_id: 'S00278901', student_name: 'Alice Cooper', status: 'present', comments: '', class_id: 'OSD-T-SD', overall_attendance: '90%' },
+    { student_id: 'S00289012', student_name: 'Bob Taylor', status: 'present', comments: '', class_id: 'OSD-T-C', overall_attendance: '75%' },
+    { student_id: 'S00290123', student_name: 'Carol White', status: 'present', comments: '', class_id: 'OSD-T-C', overall_attendance: '94%' }
   ];
 
   filteredStudents: Student[] = [];
@@ -99,11 +96,6 @@ export class AttendanceFormComponent implements OnInit {
         student.class_id === selectedClass
       );
     }
-  }
-
-  exportToCSV(): void {
-    // Implementation for CSV export
-    console.log('Exporting to CSV...');
   }
 
   saveAttendance(): void {
@@ -160,10 +152,6 @@ export class AttendanceFormComponent implements OnInit {
         panelClass: ['error-snackbar']
       });
     }
-  }
-
-  cancel(): void {
-    this.router.navigate(['/attendance']);
   }
 
   autoSelectClass(): void {
