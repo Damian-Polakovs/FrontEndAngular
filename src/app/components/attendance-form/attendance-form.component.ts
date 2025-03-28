@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { AttendanceService } from '../../services/attendance.service';
-import { BulkAttendanceData, BulkAttendanceResponse, StudentAttendanceRecord } from '../../models/attendance';
-import { Student } from '../../models/student';
+import { AttendanceService } from '../../../attendance/attendance.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { BulkAttendanceResponse } from '../../models/attendance';
+import { StateService, ClassAttendance, AttendanceRecord } from '../../services/state.service';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -16,14 +16,34 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { NavbarComponent } from '../navbar/navbar.component';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+interface Student {
+  student_id: string;
+  student_name: string;
+  status: 'present' | 'absent' | 'late';
+  comments: string;
+  class_id: string;
+}
+
+interface StudentAttendanceRecord {
+  student_id: string;
+  student_name: string;
+  status: 'present' | 'absent' | 'late';
+  comments: string;
+}
+
+interface BulkAttendanceData {
+  class_id: string;
+  date: Date;
+  records: StudentAttendanceRecord[];
+}
 
 @Component({
   selector: 'app-attendance-form',
   templateUrl: './attendance-form.component.html',
-  styleUrls: ['./attendance-form.component.css'],
+  styleUrls: ['./attendance-form.component.css', '../../styles/shared-styles.css'],
   standalone: true,
   imports: [
     CommonModule,
@@ -38,14 +58,13 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     MatTableModule,
     MatIconModule,
     MatMenuModule,
-    NavbarComponent,
     RouterModule
   ]
 })
 export class AttendanceFormComponent implements OnInit {
   displayedColumns = ['student_id', 'name', 'present', 'comments'];
   
-  // Define class schedule
+  //Class schedule
   classSchedule = [
     { id: 'OSD-L-SD', name: 'Open Stack Development Lecture (Software Development)', dayOfWeek: 1, startTime: '09:00', endTime: '11:00' },
     { id: 'OSD-L-C', name: 'Open Stack Development Lecture (Computing)', dayOfWeek: 1, startTime: '13:00', endTime: '15:00' },
@@ -53,7 +72,7 @@ export class AttendanceFormComponent implements OnInit {
     { id: 'OSD-T-C', name: 'Open Stack Development Tutorial (Computing)', dayOfWeek: 3, startTime: '13:00', endTime: '15:00' }
   ];
 
-  // Define students
+  //Students
   students: Student[] = [
     { student_id: 'S00212345', student_name: 'John Smith', status: 'present', comments: '', class_id: 'OSD-L-SD' },
     { student_id: 'S00234567', student_name: 'Emma Johnson', status: 'present', comments: '', class_id: 'OSD-L-SD' },
@@ -72,7 +91,8 @@ export class AttendanceFormComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private snackBar: MatSnackBar,
-    private attendanceService: AttendanceService
+    private attendanceService: AttendanceService,
+    private stateService: StateService
   ) {
     this.attendanceForm = this.fb.group({
       class_id: ['', Validators.required],
@@ -81,8 +101,15 @@ export class AttendanceFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    //Initialise with all students
+    this.filteredStudents = this.students;
+    
     this.autoSelectClass();
-    this.applyFilter();
+    
+    //Set up form value changes subscription
+    this.attendanceForm.get('class_id')?.valueChanges.subscribe((value) => {
+      this.applyFilter();
+    });
   }
 
   updateAttendance(student: Student, status: 'present' | 'late' | 'absent'): void {
@@ -92,9 +119,11 @@ export class AttendanceFormComponent implements OnInit {
   applyFilter(): void {
     const selectedClass = this.attendanceForm.get('class_id')?.value;
     
-    if (!selectedClass) {
+    if (!selectedClass || selectedClass === '') {
+      //If no class is selected, show all students
       this.filteredStudents = this.students;
     } else {
+      //Filter students by the selected class
       this.filteredStudents = this.students.filter(student => 
         student.class_id === selectedClass
       );
@@ -102,32 +131,29 @@ export class AttendanceFormComponent implements OnInit {
   }
 
   exportToCSV(): void {
-    // Implementation for CSV export
+    //Implementation for CSV export
     console.log('Exporting to CSV...');
   }
 
   saveAttendance(): void {
     if (this.attendanceForm.valid) {
-      const hasIncompleteRecords = this.filteredStudents.some(student => !student.status);
+      const selectedClass = this.attendanceForm.get('class_id')?.value;
+      const selectedDate = this.attendanceForm.get('date')?.value;
       
-      if (hasIncompleteRecords) {
-        this.snackBar.open('Please mark attendance status for all students', 'Close', { 
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
-        return;
-      }
-
-      const records: StudentAttendanceRecord[] = this.filteredStudents.map(student => ({
-        student_id: student.student_id,
-        student_name: student.student_name,
-        status: student.status,
-        comments: student.comments || ''
-      }));
-
-      const attendanceData: BulkAttendanceData = {
-        class_id: this.attendanceForm.get('class_id')?.value,
-        date: this.attendanceForm.get('date')?.value,
+      //Convert student records to the format expected by the API
+      const records = this.filteredStudents.map(student => {
+        return {
+          student_id: student.student_id,
+          student_name: student.student_name,
+          status: student.status,
+          comments: student.comments
+        };
+      });
+      
+      //Create the attendance data object for the API
+      const attendanceData = {
+        class_id: selectedClass,
+        date: selectedDate,
         records: records
       };
 
@@ -138,6 +164,19 @@ export class AttendanceFormComponent implements OnInit {
               duration: 3000,
               panelClass: ['success-snackbar']
             });
+            
+            //Convert to ClassAttendance format for state management
+            const stateAttendanceData: ClassAttendance = {
+              class_id: selectedClass,
+              date: selectedDate instanceof Date ? selectedDate.toISOString().split('T')[0] : selectedDate,
+              records: this.filteredStudents.map(student => ({
+                student_id: student.student_id,
+                status: student.status,
+                notes: student.comments || ''
+              }))
+            };
+            
+            this.stateService.addAttendanceRecord(stateAttendanceData);
             this.router.navigate(['/attendance']);
           } else {
             this.snackBar.open(response.message || 'Failed to save attendance', 'Close', { 
@@ -148,16 +187,24 @@ export class AttendanceFormComponent implements OnInit {
         },
         error: (error: HttpErrorResponse) => {
           console.error('Error saving attendance:', error);
-          this.snackBar.open(error.error?.message || 'Failed to save attendance. Please try again.', 'Close', { 
-            duration: 3000,
+          let errorMessage = 'Error saving attendance';
+          
+          if (error.error && error.error.message) {
+            errorMessage = error.error.message;
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+          
+          this.snackBar.open(errorMessage, 'Close', { 
+            duration: 5000,
             panelClass: ['error-snackbar']
           });
         }
       });
     } else {
-      this.snackBar.open('Please select a class and date', 'Close', { 
+      this.snackBar.open('Please fill out all required fields', 'Close', { 
         duration: 3000,
-        panelClass: ['error-snackbar']
+        panelClass: ['warning-snackbar']
       });
     }
   }
@@ -184,6 +231,11 @@ export class AttendanceFormComponent implements OnInit {
 
     if (currentClass) {
       this.attendanceForm.patchValue({ class_id: currentClass.id });
+      this.stateService.setCurrentClass(currentClass.id);
+      this.applyFilter();
+    } else {
+      //If no class is currently in session, show all students
+      this.filteredStudents = this.students;
     }
   }
 }

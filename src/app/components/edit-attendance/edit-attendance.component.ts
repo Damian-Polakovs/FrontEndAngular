@@ -1,11 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
-import { AttendanceService } from '../../services/attendance.service';
-import { BulkAttendanceData, BulkAttendanceResponse, StudentAttendanceRecord } from '../../models/attendance';
-import { Student } from '../../models/student';
-import { HttpErrorResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -16,8 +12,16 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { NavbarComponent } from '../navbar/navbar.component';
-import { RouterModule } from '@angular/router';
+import { AttendanceService } from '../../../attendance/attendance.service';
+import { Attendance, StudentAttendanceRecord } from '../../models/attendance';
+
+interface Student {
+  student_id: string;
+  student_name: string;
+  status: 'present' | 'absent' | 'late';
+  comments: string;
+  class_id: string;
+}
 
 @Component({
   selector: 'app-edit-attendance',
@@ -37,14 +41,19 @@ import { RouterModule } from '@angular/router';
     MatTableModule,
     MatIconModule,
     MatMenuModule,
-    NavbarComponent,
     RouterModule
   ]
 })
 export class EditAttendanceComponent implements OnInit {
-  displayedColumns = ['student_id', 'name', 'present', 'comments'];
-  
-  // Define class schedule
+  attendanceForm: FormGroup;
+  attendanceId: string | null = null;
+  attendance: Attendance | null = null;
+  isLoading = true;
+  displayedColumns = ['student_id', 'name', 'present', 'comments', 'class'];
+  showingAllClasses = false;
+  filteredStudents: Student[] = [];
+
+  //Class schedule
   classSchedule = [
     { id: 'OSD-L-SD', name: 'Open Stack Development Lecture (Software Development)', dayOfWeek: 1, startTime: '09:00', endTime: '11:00' },
     { id: 'OSD-L-C', name: 'Open Stack Development Lecture (Computing)', dayOfWeek: 1, startTime: '13:00', endTime: '15:00' },
@@ -52,7 +61,7 @@ export class EditAttendanceComponent implements OnInit {
     { id: 'OSD-T-C', name: 'Open Stack Development Tutorial (Computing)', dayOfWeek: 3, startTime: '13:00', endTime: '15:00' }
   ];
 
-  // Define students
+  //Students
   students: Student[] = [
     { student_id: 'S00212345', student_name: 'John Smith', status: 'present', comments: '', class_id: 'OSD-L-SD' },
     { student_id: 'S00234567', student_name: 'Emma Johnson', status: 'present', comments: '', class_id: 'OSD-L-SD' },
@@ -64,14 +73,12 @@ export class EditAttendanceComponent implements OnInit {
     { student_id: 'S00290123', student_name: 'Carol White', status: 'present', comments: '', class_id: 'OSD-T-C' }
   ];
 
-  filteredStudents: Student[] = [];
-  attendanceForm: FormGroup;
-
   constructor(
     private fb: FormBuilder,
+    private route: ActivatedRoute,
     private router: Router,
-    private snackBar: MatSnackBar,
-    private attendanceService: AttendanceService
+    private attendanceService: AttendanceService,
+    private snackBar: MatSnackBar
   ) {
     this.attendanceForm = this.fb.group({
       class_id: ['', Validators.required],
@@ -80,142 +87,138 @@ export class EditAttendanceComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.autoSelectClass();
-    this.applyFilter();
+    //Get attendance ID from query params
+    this.route.queryParams.subscribe(params => {
+      this.attendanceId = params['id'];
+      if (this.attendanceId) {
+        this.loadAttendance(this.attendanceId);
+      } else {
+        this.isLoading = false;
+        this.snackBar.open('No attendance record specified', 'Close', { duration: 3000 });
+        this.router.navigate(['/attendance']);
+      }
+    });
+
+    //Initialise filtered students
+    this.filteredStudents = this.students;
   }
 
-  updateAttendance(student: Student, status: 'present' | 'late' | 'absent'): void {
+  loadAttendance(id: string): void {
+    this.isLoading = true;
+    this.attendanceService.getAttendance(id).subscribe({
+      next: (data) => {
+        this.attendance = data;
+        this.attendanceForm.patchValue({
+          class_id: data.class_id,
+          date: new Date(data.date)
+        });
+        this.applyFilter();
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading attendance:', error);
+        this.snackBar.open('Failed to load attendance record', 'Close', { duration: 3000 });
+        this.isLoading = false;
+        this.router.navigate(['/attendance']);
+      }
+    });
+  }
+
+  updateStatus(student: StudentAttendanceRecord, status: 'present' | 'late' | 'absent'): void {
     student.status = status;
   }
 
   applyFilter(): void {
     const selectedClass = this.attendanceForm.get('class_id')?.value;
     
-    if (!selectedClass) {
+    if (!selectedClass || selectedClass === '') {
+      //If no class is selected, show all students
       this.filteredStudents = this.students;
+      this.showingAllClasses = false;
+    } else if (selectedClass === 'all') {
+      //Show all classes
+      this.filteredStudents = this.students;
+      this.showingAllClasses = true;
     } else {
+      //Filter students by the selected class
       this.filteredStudents = this.students.filter(student => 
         student.class_id === selectedClass
       );
+      this.showingAllClasses = false;
     }
+  }
+
+  getClassName(classId: string): string {
+    const classInfo = this.classSchedule.find(c => c.id === classId);
+    return classInfo ? classInfo.name : classId;
+  }
+
+  exportToCSV(): void {
+    //Implementation for CSV export
+    console.log('Exporting to CSV...');
+    this.snackBar.open('CSV export functionality will be implemented soon', 'Close', { duration: 3000 });
   }
 
   saveAttendance(): void {
     if (this.attendanceForm.valid) {
-      const hasIncompleteRecords = this.filteredStudents.some(student => !student.status);
+      const selectedClass = this.attendanceForm.get('class_id')?.value;
+      const selectedDate = this.attendanceForm.get('date')?.value;
       
-      if (hasIncompleteRecords) {
-        this.snackBar.open('Please mark attendance status for all students', 'Close', { 
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
-        return;
-      }
+      if (this.attendanceId && this.attendance) {
+        //Update existing attendance record
+        const updatedData = {
+          class_id: selectedClass,
+          date: selectedDate,
+          students: this.filteredStudents.map(student => ({
+            student_id: student.student_id,
+            student_name: student.student_name,
+            status: student.status,
+            comments: student.comments
+          })) as StudentAttendanceRecord[]
+        };
 
-      const records: StudentAttendanceRecord[] = this.filteredStudents.map(student => ({
-        student_id: student.student_id,
-        student_name: student.student_name,
-        status: student.status,
-        comments: student.comments || ''
-      }));
-
-      const attendanceData: BulkAttendanceData = {
-        class_id: this.attendanceForm.get('class_id')?.value,
-        date: this.attendanceForm.get('date')?.value,
-        records: records
-      };
-
-      this.attendanceService.createBulkAttendance(attendanceData).subscribe({
-        next: (response: BulkAttendanceResponse) => {
-          if (response.success) {
-            this.snackBar.open(response.message || 'Attendance saved successfully', 'Close', { 
-              duration: 3000,
-              panelClass: ['success-snackbar']
-            });
+        this.attendanceService.updateAttendance(this.attendanceId, updatedData).subscribe({
+          next: () => {
+            this.snackBar.open('Attendance record updated successfully', 'Close', { duration: 3000 });
             this.router.navigate(['/attendance']);
-          } else {
-            this.snackBar.open(response.message || 'Failed to save attendance', 'Close', { 
-              duration: 3000,
-              panelClass: ['error-snackbar']
-            });
+          },
+          error: (error) => {
+            console.error('Error updating attendance:', error);
+            this.snackBar.open('Failed to update attendance record', 'Close', { duration: 3000 });
           }
-        },
-        error: (error: HttpErrorResponse) => {
-          console.error('Error saving attendance:', error);
-          this.snackBar.open(error.error?.message || 'Failed to save attendance. Please try again.', 'Close', { 
-            duration: 3000,
-            panelClass: ['error-snackbar']
-          });
-        }
-      });
-    } else {
-      this.snackBar.open('Please select a class and date', 'Close', { 
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
+        });
+      } else {
+        //Create new attendance record
+        const attendanceData = {
+          class_id: selectedClass,
+          date: selectedDate,
+          records: this.filteredStudents.map(student => ({
+            student_id: student.student_id,
+            student_name: student.student_name,
+            status: student.status,
+            comments: student.comments
+          })) as StudentAttendanceRecord[]
+        };
+
+        this.attendanceService.createBulkAttendance(attendanceData).subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.snackBar.open(response.message || 'Attendance saved successfully', 'Close', { duration: 3000 });
+              this.router.navigate(['/attendance']);
+            } else {
+              this.snackBar.open(response.message || 'Failed to save attendance', 'Close', { duration: 3000 });
+            }
+          },
+          error: (error) => {
+            console.error('Error saving attendance:', error);
+            this.snackBar.open('Error saving attendance', 'Close', { duration: 3000 });
+          }
+        });
+      }
     }
   }
 
   cancel(): void {
     this.router.navigate(['/attendance']);
-  }
-
-  autoSelectClass(): void {
-    const now = new Date();
-    const currentDay = now.getDay();
-    const currentTime = now.getHours() * 100 + now.getMinutes();
-
-    const currentClass = this.classSchedule.find(cls => {
-      const [startHour, startMinute] = cls.startTime.split(':').map(Number);
-      const [endHour, endMinute] = cls.endTime.split(':').map(Number);
-      const classStartTime = startHour * 100 + startMinute;
-      const classEndTime = endHour * 100 + endMinute;
-
-      return cls.dayOfWeek === currentDay && 
-             currentTime >= classStartTime && 
-             currentTime <= classEndTime;
-    });
-
-    if (currentClass) {
-      this.attendanceForm.patchValue({ class_id: currentClass.id });
-    }
-  }
-
-  exportToCSV(): void {
-    if (this.filteredStudents.length === 0) {
-      this.snackBar.open('No data to export', 'Close', { duration: 3000 });
-      return;
-    }
-
-    const selectedClass = this.classSchedule.find(c => c.id === this.attendanceForm.get('class_id')?.value);
-    const date = this.attendanceForm.get('date')?.value;
-    const formattedDate = date ? new Date(date).toLocaleDateString() : 'No Date';
-    
-    const headers = ['Student ID', 'Name', 'Status', 'Comments'];
-    const csvData = this.filteredStudents.map(student => [
-      student.student_id,
-      student.student_name,
-      student.status || 'Not Marked',
-      student.comments || ''
-    ]);
-
-    // Add class and date information at the top
-    const titleRow = [`Class: ${selectedClass?.name || 'All Classes'}`];
-    const dateRow = [`Date: ${formattedDate}`];
-    const csvContent = [
-      titleRow,
-      dateRow,
-      [],  // Empty row for spacing
-      headers,
-      ...csvData
-    ].map(row => row.join(',')).join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `attendance_${selectedClass?.id || 'all'}_${formattedDate}.csv`;
-    link.click();
-    window.URL.revokeObjectURL(url);
   }
 }

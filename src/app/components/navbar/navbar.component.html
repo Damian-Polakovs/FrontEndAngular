@@ -1,0 +1,35 @@
+<mat-toolbar color="primary">
+  <span>Attendance Management</span>
+  <span class="spacer"></span>
+  
+  <!-- Navigation buttons -->
+  <button mat-icon-button matTooltip="Attendance" (click)="goToAttendance()">
+    <mat-icon>event</mat-icon>
+  </button>
+  
+  <!-- Admin dashboard button (only visible to admins) -->
+  <button mat-icon-button matTooltip="Admin Dashboard" *ngIf="isAdmin" (click)="goToAdminDashboard()">
+    <mat-icon>dashboard</mat-icon>
+  </button>
+  
+  <!-- User menu -->
+  <button mat-icon-button [matMenuTriggerFor]="userMenu" *ngIf="isAuthenticated">
+    <mat-icon>account_circle</mat-icon>
+  </button>
+  <mat-menu #userMenu="matMenu">
+    <div class="user-info" *ngIf="userEmail">
+      <p>{{ userEmail }}</p>
+      <p *ngIf="isAdmin"><strong>Role:</strong> Admin</p>
+      <p *ngIf="isTeacher"><strong>Role:</strong> Teacher</p>
+    </div>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Logout</span>
+    </button>
+  </mat-menu>
+  
+  <!-- Login button (only visible when not authenticated) -->
+  <button mat-icon-button matTooltip="Login" *ngIf="!isAuthenticated" (click)="login()">
+    <mat-icon>login</mat-icon>
+  </button>
+</mat-toolbar>

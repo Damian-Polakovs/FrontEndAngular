@@ -80,3 +80,32 @@ mat-radio-group {
   background: #f44336;
   color: white;
 }
+
+.all-classes-notice {
+  display: flex;
+  align-items: center;
+  background-color: #e3f2fd;
+  padding: 10px 16px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  border-left: 4px solid #2196f3;
+}
+
+.all-classes-notice mat-icon {
+  margin-right: 8px;
+}
+
+.class-cell {
+  font-size: 0.9em;
+  color: #555;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+  .class-cell {
+    max-width: 120px;
+  }
+}

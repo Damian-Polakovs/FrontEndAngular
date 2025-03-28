@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { AttendanceService } from '../../services/attendance.service';
+import { AttendanceService } from '../../../attendance/attendance.service';
 import { Attendance, PaginatedResponse } from '../../models/attendance';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatTableModule } from '@angular/material/table';
@@ -77,7 +77,7 @@ export class AttendanceListComponent implements OnInit {
             let matchesDateRange = true;
 
             if (filters.student_id) {
-                matchesStudentId = data.student_id.toString().includes(filters.student_id);
+                matchesStudentId = data.students.toString().includes(filters.student_id);
             }
 
             if (filters.class_id) {
@@ -93,7 +93,7 @@ export class AttendanceListComponent implements OnInit {
             return matchesStudentId && matchesClassId && matchesDateRange;
         };
 
-        this.dataSource.filter = 'trigger'; // Any string will do, as we're using custom filterPredicate
+        this.dataSource.filter = 'trigger'; //Any string will do becayse of custom filterPredicate
     }
 
     clearFilters(): void {
@@ -105,14 +105,14 @@ export class AttendanceListComponent implements OnInit {
       this.isLoading = true;
       const filters = this.searchForm.value;
       
-      // Prepare query parameters
+      //Prepare query parameters
       const params: any = {};
       if (filters.student_id) params.student_id = filters.student_id;
       if (filters.class_id) params.class_id = filters.class_id;
       if (filters.startDate) params.startDate = filters.startDate.toISOString();
       if (filters.endDate) params.endDate = filters.endDate.toISOString();
   
-      // Pass params to the service
+      //Pass params to the service
       this.attendanceService.getAttendances(params).subscribe({
           next: (response: PaginatedResponse<Attendance>) => {
               this.dataSource.data = response.data;

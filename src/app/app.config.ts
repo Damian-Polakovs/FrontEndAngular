@@ -6,7 +6,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { provideAuth0 } from '@auth0/auth0-angular';
 import { environment } from '../environments/environment';
-import { authInterceptorFn } from './interceptors/auth.interceptor.fn';
+import { authInterceptorFn } from './interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -23,4 +23,4 @@ export const appConfig: ApplicationConfig = {
     }),
     { provide: 'Window', useValue: window }
   ]
-};
+}
