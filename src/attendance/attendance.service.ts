@@ -2,23 +2,21 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { BulkAttendanceData, BulkAttendanceResponse, Attendance, PaginatedResponse } from './attendance';
+import { Attendance, BulkAttendanceData, BulkAttendanceResponse, PaginatedResponse } from '../app/models/attendance';
 import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AttendanceService {
-  // Update the API URL to directly use the correct endpoint
-  private apiUrl = 'http://localhost:3000/api/attendance';
+  private apiUrl = environment.apiUrl + '/api/attendance';
 
   constructor(private http: HttpClient) { 
-    console.log('API URL:', this.apiUrl); // Add logging to verify the URL
+    console.log('API URL:', this.apiUrl);
   }
 
   private handleError(error: any): Observable<never> {
     console.error('An error occurred:', error);
-    // Extract more detailed error information if available
     let errorMessage = 'Something went wrong; please try again later.';
     if (error.error && error.error.message) {
       errorMessage = `Server error: ${error.error.message}`;
@@ -50,19 +48,13 @@ export class AttendanceService {
       .pipe(catchError(this.handleError));
   }
 
-  createBulkAttendance(data: BulkAttendanceData): Observable<BulkAttendanceResponse> {
-    console.log('Sending bulk attendance request to:', `${this.apiUrl}/bulk`);
-    console.log('Request data:', data);
-    return this.http.post<BulkAttendanceResponse>(`${this.apiUrl}/bulk`, data)
-      .pipe(
-        catchError((error) => {
-          console.error('Bulk attendance error details:', error);
-          return this.handleError(error);
-        })
-      );
+  getOverallAttendance(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/statistics`)
+      .pipe(catchError(this.handleError));
   }
 
   updateAttendance(id: string, data: Partial<Attendance>): Observable<Attendance> {
+    console.log('Updating attendance:', { id, data });
     return this.http.put<Attendance>(`${this.apiUrl}/${id}`, data)
       .pipe(catchError(this.handleError));
   }
@@ -72,8 +64,8 @@ export class AttendanceService {
       .pipe(catchError(this.handleError));
   }
 
-  getOverallAttendance(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/overall`)
+  createBulkAttendance(data: BulkAttendanceData): Observable<BulkAttendanceResponse> {
+    return this.http.post<BulkAttendanceResponse>(`${this.apiUrl}/bulk`, data)
       .pipe(catchError(this.handleError));
   }
 }

@@ -46,7 +46,7 @@ export class LoginComponent implements OnInit {
     try {
       this.isLoading = true;
       this.error = null;
-      await this.auth.login();
+      await this.auth.loginWithRedirect();
     } catch (error) {
       this.error = 'Failed to log in. Please try again.';
       this.snackBar.open(this.error, 'Close', {

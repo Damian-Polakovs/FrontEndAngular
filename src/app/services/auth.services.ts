@@ -50,14 +50,14 @@ export class AuthService {
     console.log('Checking roles for user:', user.email);
     
     //Hardcoded admin check for specific email
-    if (user.email === 'admin@atu.ie' || user.email === 'damianpolakovs2004@gmail.com') {
+    if (user.email === 'admin@atu.ie') {
       console.log('HARDCODED ADMIN MATCH for admin email');
       return ['admin'];
     }
     
-    //Check if the email domain is from a teacher
-    if (user.email && user.email.endsWith('@atu.ie')) {
-      console.log('Teacher email domain detected for:', user.email);
+    //Check if the email is from a teacher
+    if (user.email === 'damianpolakovs2004@gmail.com' || user.email.endsWith('@atu.ie')) {
+      console.log('Teacher email detected for:', user.email);
       return ['teacher'];
     }
     

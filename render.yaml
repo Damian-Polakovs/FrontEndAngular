@@ -9,4 +9,6 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: API_URL
+        value: https://taskmanager-api.onrender.com # This will be the URL of your backend
     autoDeploy: true
